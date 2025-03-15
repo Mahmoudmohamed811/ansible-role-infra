@@ -1,0 +1,30 @@
+---
+# tasks file for roles/infra
+- name: Upload CloudFormation Template with Jinja2 Variables
+  template:
+    src: cloudformation-template.yml.j2
+    dest: /tmp/cloudformation-template.yml
+
+- name: Create CloudFormation Stack
+  amazon.aws.cloudformation:
+    stack_name: "{{ stack_name }}"
+    state: present
+    region: "{{ aws_region }}"
+    template_body: "{{ lookup('file', '/tmp/cloudformation-template.yml') }}"
+    capabilities: ["CAPABILITY_NAMED_IAM"]
+  register: cloudformation_result
+
+- name: Wait for CloudFormation Stack Creation
+  wait_for:
+    timeout: 300
+  when: cloudformation_result.changed
+
+- name: Set Facts for CloudFormation Outputs
+  set_fact:
+    vpc_id: "{{ cloudformation_result.stack_outputs.VPCID }}"
+    public_subnet_id: "{{ cloudformation_result.stack_outputs.PublicSubnetID }}"
+    private_subnet1_id: "{{ cloudformation_result.stack_outputs.PrivateSubnet1ID }}"
+    private_subnet2_id: "{{ cloudformation_result.stack_outputs.PrivateSubnet2ID }}"
+    web_sg_id: "{{ cloudformation_result.stack_outputs.WebSGID }}"
+    db_sg_id: "{{ cloudformation_result.stack_outputs.DBSGID }}"
+  when: cloudformation_result.stack_outputs is defined    

@@ -1,38 +1,33 @@
-Role Name
-=========
+# Infra Role
 
-A brief description of the role goes here.
+This role provisions AWS infrastructure using CloudFormation. It creates a CloudFormation stack based on a provided template and sets facts for the stack outputs (e.g., VPC ID, Subnet IDs, Security Group IDs).
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- **Ansible**: Version 2.9 or higher.
+- **AWS Credentials**: Configured on the target machine (e.g., using `aws configure` or environment variables).
+- **Python Dependencies**:
+  - `boto3` and `botocore` (required for AWS modules).
+  - Install them using:
+    ```bash
+    pip install boto3 botocore
+    ```
+- **Ansible Collections**:
+  - `amazon.aws` (for AWS modules).
+  - Install it using:
+    ```bash
+    ansible-galaxy collection install amazon.aws
+    ```
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+### Default Variables (defined in `defaults/main.yml`)
+- `stack_name`: The name of the CloudFormation stack. Default: `"MyInfrastructure"`.
+- `aws_region`: The AWS region where the stack will be created. Default: `"us-east-1"`.
+- `vpc_cidr`: The CIDR block for the VPC. Default: `"10.0.0.0/16"`.
+- `vpc_name`: The name tag for the VPC. Default: `"MyVPC"`.
+- `public_subnet_cidr`: The CIDR block for the public subnet. Default: `"10.0.1.0/24"`.
+- `private_subnet1_cidr`: The CIDR block for the first private subnet. Default: `"10.0.2.0/24"`.
+- `private_subnet2_cidr`: The CIDR block for the second private subnet. Default: `"10.0.3.0/24"`.
+- `web_sg_name`: The name of the security group for web servers. Default: `"WebSecurityGroup"`.
+- `db_sg_name`: The name of the security group for the database. Default: `"DBSecurityGroup"`.
